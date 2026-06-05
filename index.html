@@ -142,6 +142,24 @@
 
   .pulse{animation:pulse 2.6s ease-in-out infinite;}
   @keyframes pulse{0%,100%{box-shadow:0 2px 16px rgba(0,0,0,.06);}50%{box-shadow:0 4px 28px rgba(196,153,90,.18);}}
+
+  /* accordion */
+  .acc-wrap{margin-top:34px;}
+  .acc-wrap + .acc-wrap{margin-top:14px;}
+  .acc-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 16px;background:var(--card);border:1px solid var(--card-edge);border-radius:20px;box-shadow:0 2px 16px rgba(0,0,0,.06);transition:border-radius .35s ease, box-shadow .2s;}
+  .acc-header:active{opacity:.85;}
+  .acc-header.open{border-radius:20px 20px 0 0;border-bottom-color:transparent;box-shadow:0 2px 16px rgba(0,0,0,.06);}
+  .acc-header-left{display:flex;align-items:center;gap:9px;}
+  .acc-dot{width:9px;height:9px;border-radius:3px;background:var(--olive);flex:none;}
+  .acc-title{font-size:13px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
+  .acc-arrow{width:28px;height:28px;border-radius:50%;border:1px solid var(--card-edge);background:var(--bg);display:grid;place-items:center;flex:none;transition:transform .35s cubic-bezier(.2,.7,.2,1);}
+  .acc-arrow svg{width:13px;height:13px;stroke:var(--muted);transition:stroke .2s;}
+  .acc-header.open .acc-arrow{transform:rotate(180deg);}
+  .acc-header.open .acc-arrow svg{stroke:var(--olive-deep);}
+  .acc-body{display:grid;grid-template-rows:0fr;transition:grid-template-rows .38s cubic-bezier(.2,.7,.2,1);}
+  .acc-body.open{grid-template-rows:1fr;}
+  .acc-inner{overflow:hidden;}
+  .acc-inner > .card{border-radius:0 0 20px 20px;border-top:none;margin-top:0;box-shadow:0 4px 16px rgba(0,0,0,.06);}
 </style>
 </head>
 <body>
@@ -175,106 +193,143 @@
     </div>
   </div>
 
-  <div class="sec-h reveal"><span class="dot"></span><h2>Calorias por refeição</h2></div>
-  <div class="card reveal">
-    <button class="copy" data-copy="Calorias por refeicao (estimativa):
+  <!-- ACCORDION: Calorias por refeição -->
+  <div class="acc-wrap reveal">
+    <div class="acc-header" onclick="accToggle(this)">
+      <div class="acc-header-left"><span class="acc-dot"></span><span class="acc-title">Calorias por refeição</span></div>
+      <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-inner">
+        <div class="card">
+          <button class="copy" data-copy="Calorias por refeicao (estimativa):
 - Cafe da manha (06:30): ~390 kcal
 - Almoco (13:00): ~600 kcal
 - Lanche da tarde (16:00): ~205 kcal
 - Pre-treino (18:30): ~190 kcal
 - Jantar (21:00): ~720 kcal
-TOTAL DIARIO: ~2.100 kcal">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      copiar
-    </button>
-    <div class="meal"><div class="mic">☕</div><div class="mbody"><div class="mtop"><div><div class="mname">Café da manhã</div><div class="mtime">06:30</div></div><div class="mkcal">390</div></div><div class="track"><div class="fill" data-pct="54"></div></div></div></div>
-    <div class="meal"><div class="mic">🍽️</div><div class="mbody"><div class="mtop"><div><div class="mname">Almoço</div><div class="mtime">13:00</div></div><div class="mkcal">600</div></div><div class="track"><div class="fill" data-pct="83"></div></div></div></div>
-    <div class="meal"><div class="mic">🥪</div><div class="mbody"><div class="mtop"><div><div class="mname">Lanche da tarde</div><div class="mtime">16:00</div></div><div class="mkcal">205</div></div><div class="track"><div class="fill" data-pct="28"></div></div></div></div>
-    <div class="meal"><div class="mic">⚡</div><div class="mbody"><div class="mtop"><div><div class="mname">Pré-treino</div><div class="mtime">18:30</div></div><div class="mkcal">190</div></div><div class="track"><div class="fill" data-pct="26"></div></div></div></div>
-    <div class="meal"><div class="mic">🌙</div><div class="mbody"><div class="mtop"><div><div class="mname">Jantar</div><div class="mtime">21:00</div></div><div class="mkcal">720</div></div><div class="track"><div class="fill" data-pct="100"></div></div></div></div>
-    <div class="total-row"><div class="tl">Total diário</div><div class="tv"><span data-count="2100">0</span> <span class="unit">kcal</span></div></div>
+TOTAL DIARIO: ~2.100 kcal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>copiar</button>
+          <div class="meal"><div class="mic">☕</div><div class="mbody"><div class="mtop"><div><div class="mname">Café da manhã</div><div class="mtime">06:30</div></div><div class="mkcal">390</div></div><div class="track"><div class="fill" data-pct="54"></div></div></div></div>
+          <div class="meal"><div class="mic">🍽️</div><div class="mbody"><div class="mtop"><div><div class="mname">Almoço</div><div class="mtime">13:00</div></div><div class="mkcal">600</div></div><div class="track"><div class="fill" data-pct="83"></div></div></div></div>
+          <div class="meal"><div class="mic">🥪</div><div class="mbody"><div class="mtop"><div><div class="mname">Lanche da tarde</div><div class="mtime">16:00</div></div><div class="mkcal">205</div></div><div class="track"><div class="fill" data-pct="28"></div></div></div></div>
+          <div class="meal"><div class="mic">⚡</div><div class="mbody"><div class="mtop"><div><div class="mname">Pré-treino</div><div class="mtime">18:30</div></div><div class="mkcal">190</div></div><div class="track"><div class="fill" data-pct="26"></div></div></div></div>
+          <div class="meal"><div class="mic">🌙</div><div class="mbody"><div class="mtop"><div><div class="mname">Jantar</div><div class="mtime">21:00</div></div><div class="mkcal">720</div></div><div class="track"><div class="fill" data-pct="100"></div></div></div></div>
+          <div class="total-row"><div class="tl">Total diário</div><div class="tv"><span data-count="2100">0</span> <span class="unit">kcal</span></div></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- LIVE ENERGY + AGENDA -->
-  <div class="sec-h reveal"><span class="dot"></span><h2>Gasto energético · ao vivo</h2></div>
-  <div class="card reveal">
-    <button class="copy" data-copy="Gasto energetico (modelo: Base + treino):
+  <!-- ACCORDION: Gasto energético -->
+  <div class="acc-wrap reveal">
+    <div class="acc-header" onclick="accToggle(this)">
+      <div class="acc-header-left"><span class="acc-dot"></span><span class="acc-title">Gasto energético · ao vivo</span></div>
+      <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-inner">
+        <div class="card">
+          <button class="copy" data-copy="Gasto energetico (modelo: Base + treino):
 - Base sem treino (metabolismo + rotina): ~2.300 kcal/dia
 - Boxe 1h30: +850 kcal
 - Musculacao + esteira: +600 kcal
 - CrossFit 1h: +750 kcal
 - Bike 10km: +300 kcal
-Gasto do dia = base + treino que voce marcou.">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      copiar
-    </button>
-    <div class="today-head"><div class="tlab">🔥 GASTO DE HOJE</div></div>
-    <div class="today-big" id="gastoHoje">2.300<span class="u">kcal</span></div>
-    <div class="brk" id="gastoBreak">base 2.300 · marque o treino de hoje p/ somar</div>
-
-    <div class="refchips">
-      <div class="refchip">Basal <b>1.750</b></div>
-      <div class="refchip">Base s/ treino <b>2.300</b></div>
-      <div class="refchip">Semana cheia <b>~3.000</b></div>
+Gasto do dia = base + treino que voce marcou."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>copiar</button>
+          <div class="today-head"><div class="tlab">🔥 GASTO DE HOJE</div></div>
+          <div class="today-big" id="gastoHoje">2.300<span class="u">kcal</span></div>
+          <div class="brk" id="gastoBreak">base 2.300 · marque o treino de hoje p/ somar</div>
+          <div class="refchips">
+            <div class="refchip">Basal <b>1.750</b></div>
+            <div class="refchip">Base s/ treino <b>2.300</b></div>
+            <div class="refchip">Semana cheia <b>~3.000</b></div>
+          </div>
+          <div class="agenda-h">Sua semana — toque pra marcar o que treinou</div>
+          <div id="agenda"></div>
+          <div class="wsum">
+            <div class="wb"><div class="wv" id="wkDone">0</div><div class="wl">treinos feitos</div></div>
+            <div class="wb"><div class="wv" id="wkBurned">0</div><div class="wl">kcal queimadas/sem</div></div>
+          </div>
+          <div class="hint">💡 <span>Gasto de hoje = base (metabolismo + rotina) + o treino marcado de hoje. Assim o exercício não é contado duas vezes.</span></div>
+        </div>
+      </div>
     </div>
-
-    <div class="agenda-h">Sua semana — toque pra marcar o que treinou</div>
-    <div id="agenda"></div>
-
-    <div class="wsum">
-      <div class="wb"><div class="wv" id="wkDone">0</div><div class="wl">treinos feitos</div></div>
-      <div class="wb"><div class="wv" id="wkBurned">0</div><div class="wl">kcal queimadas/sem</div></div>
-    </div>
-    <div class="hint">💡 <span>Gasto de hoje = base (metabolismo + rotina) + o treino marcado de hoje. Assim o exercício não é contado duas vezes.</span></div>
   </div>
 
-  <div class="sec-h reveal"><span class="dot"></span><h2>Seu déficit hoje</h2></div>
-  <div class="card def-card reveal">
-    <button class="copy" data-copy="Deficit de hoje = gasto do dia - consumo (~2.100 kcal).
+  <!-- ACCORDION: Déficit -->
+  <div class="acc-wrap reveal">
+    <div class="acc-header" onclick="accToggle(this)">
+      <div class="acc-header-left"><span class="acc-dot"></span><span class="acc-title">Seu déficit hoje</span></div>
+      <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-inner">
+        <div class="card def-card">
+          <button class="copy" data-copy="Deficit de hoje = gasto do dia - consumo (~2.100 kcal).
 Em dia sem treino: ~200 kcal. Com treino marcado, sobe conforme a queima do exercicio.
-~7.700 kcal equivalem a ~1 kg de gordura.">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      copiar
-    </button>
-    <div class="big"><div class="bn" id="defNum">~200</div><div class="bu">kcal / dia</div></div>
-    <p id="defNarr">Base do dia (2.300) − consumo (2.100). Marque o treino de hoje na agenda acima para somar o gasto do exercício.</p>
-    <div class="lossbadge" id="defBadge">⬇️ ~0,2 kg por semana nesse ritmo</div>
+~7.700 kcal equivalem a ~1 kg de gordura."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>copiar</button>
+          <div class="big"><div class="bn" id="defNum">~200</div><div class="bu">kcal / dia</div></div>
+          <p id="defNarr">Base do dia (2.300) − consumo (2.100). Marque o treino de hoje na agenda acima para somar o gasto do exercício.</p>
+          <div class="lossbadge" id="defBadge">⬇️ ~0,2 kg por semana nesse ritmo</div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="sec-h reveal"><span class="dot"></span><h2>Proteína do dia</h2></div>
-  <div class="card pgauge reveal">
-    <button class="copy" data-copy="Proteina estimada do plano: ~115-125 g/dia (~1,4 g por kg).
-Ideal para o seu treino: 1,6 a 2,2 g/kg (~135-180 g). Esta um pouco abaixo do ideal.">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      copiar
-    </button>
-    <div class="pn"><span data-count="120">0</span> <span class="unit">g/dia &nbsp;(~1,4 g/kg)</span></div>
-    <div class="ideal">Ideal p/ seu treino: 135–180 g (1,6–2,2 g/kg)</div>
-    <div class="ptrack"><div class="pfill" data-pct="67"></div><div class="pmark" style="left:80%"></div></div>
-    <div class="prange"><span>0 g</span><span>180 g</span></div>
+  <!-- ACCORDION: Proteína -->
+  <div class="acc-wrap reveal">
+    <div class="acc-header" onclick="accToggle(this)">
+      <div class="acc-header-left"><span class="acc-dot"></span><span class="acc-title">Proteína do dia</span></div>
+      <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-inner">
+        <div class="card pgauge">
+          <button class="copy" data-copy="Proteina estimada do plano: ~115-125 g/dia (~1,4 g por kg).
+Ideal para o seu treino: 1,6 a 2,2 g/kg (~135-180 g). Esta um pouco abaixo do ideal."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>copiar</button>
+          <div class="pn"><span data-count="120">0</span> <span class="unit">g/dia &nbsp;(~1,4 g/kg)</span></div>
+          <div class="ideal">Ideal p/ seu treino: 135–180 g (1,6–2,2 g/kg)</div>
+          <div class="ptrack"><div class="pfill" data-pct="67"></div><div class="pmark" style="left:80%"></div></div>
+          <div class="prange"><span>0 g</span><span>180 g</span></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="sec-h reveal"><span class="dot"></span><h2>Insights principais</h2></div>
-  <div class="card reveal">
-    <button class="copy" data-copy="Insights principais:
+  <!-- ACCORDION: Insights -->
+  <div class="acc-wrap reveal">
+    <div class="acc-header" onclick="accToggle(this)">
+      <div class="acc-header-left"><span class="acc-dot"></span><span class="acc-title">Insights principais</span></div>
+      <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-inner">
+        <div class="card">
+          <button class="copy" data-copy="Insights principais:
 1. Modelo de gasto: base (~2.300) + treino marcado do dia.
 2. Em dia sem treino o deficit e pequeno (~200); treinar e o que cria o deficit relevante.
 3. Proteina um pouco abaixo do ideal para o volume de treino.
 4. Consumo real pode ser maior (saladas a vontade, azeites, substituicoes).
 5. Acompanhar peso e medidas a cada 2-3 semanas e ajustar.
-6. Validar com a nutricionista (CRN 43226).">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-      copiar
-    </button>
-    <div class="ins"><div class="ii">🏋️</div><div class="it">O <b>treino é o motor do déficit</b>: num dia parado o déficit é pequeno (~200); marcando o treino ele sobe de verdade.</div></div>
-    <div class="ins"><div class="ii">🥩</div><div class="it">Proteína está <span class="warn">um pouco abaixo</span> do ideal para o seu volume de treino.</div></div>
-    <div class="ins"><div class="ii">🥗</div><div class="it">Consumo real pode ser maior (saladas à vontade, azeites, substituições) — o que <b>reduz o déficit</b>.</div></div>
-    <div class="ins"><div class="ii">📅</div><div class="it">Acompanhe <b>peso e medidas a cada 2–3 semanas</b> e ajuste conforme o resultado.</div></div>
+6. Validar com a nutricionista (CRN 43226)."><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>copiar</button>
+          <div class="ins"><div class="ii">🏋️</div><div class="it">O <b>treino é o motor do déficit</b>: num dia parado o déficit é pequeno (~200); marcando o treino ele sobe de verdade.</div></div>
+          <div class="ins"><div class="ii">🥩</div><div class="it">Proteína está <span class="warn">um pouco abaixo</span> do ideal para o seu volume de treino.</div></div>
+          <div class="ins"><div class="ii">🥗</div><div class="it">Consumo real pode ser maior (saladas à vontade, azeites, substituições) — o que <b>reduz o déficit</b>.</div></div>
+          <div class="ins"><div class="ii">📅</div><div class="it">Acompanhe <b>peso e medidas a cada 2–3 semanas</b> e ajuste conforme o resultado.</div></div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- PROTOCOLO ESTEIRA -->
-  <div class="sec-h reveal"><span class="dot" style="background:var(--lime)"></span><h2>Protocolo esteira · ao vivo</h2></div>
-  <div class="card reveal" id="treadmill-card">
+  <!-- ACCORDION: Protocolo Esteira -->
+  <div class="acc-wrap reveal">
+    <div class="acc-header" onclick="accToggle(this)">
+      <div class="acc-header-left"><span class="acc-dot" style="background:var(--olive)"></span><span class="acc-title">Protocolo esteira · ao vivo</span></div>
+      <div class="acc-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></div>
+    </div>
+    <div class="acc-body">
+      <div class="acc-inner">
+        <div class="card" id="treadmill-card">
 
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
       <div>
@@ -312,6 +367,9 @@ Ideal para o seu treino: 1,6 a 2,2 g/kg (~135-180 g). Esta um pouco abaixo do id
         ✅ Abdômen contraído e postura ereta<br>
         ✅ Passadas firmes, pisando o pé inteiro<br>
         ✅ Se inclinação 12–13 for demais, comece em 10 e suba com o tempo
+      </div>
+    </div>
+        </div>
       </div>
     </div>
   </div>
@@ -539,6 +597,21 @@ Ideal para o seu treino: 1,6 a 2,2 g/kg (~135-180 g). Esta um pouco abaixo do id
       setTimeout(()=>{btn.classList.remove('done');btn.innerHTML=orig;},1600);
     });
   });
+
+  /* ---------- accordion ---------- */
+  function accToggle(header){
+    const body=header.nextElementSibling;
+    const isOpen=header.classList.contains('open');
+    header.classList.toggle('open',!isOpen);
+    body.classList.toggle('open',!isOpen);
+    // dispara fills e count-ups quando abre
+    if(!isOpen){
+      setTimeout(()=>{
+        body.querySelectorAll('.fill,.pfill').forEach(f=>{f.style.width=f.dataset.pct+'%';});
+        body.querySelectorAll('[data-count]').forEach(el=>{if(!el.dataset.done)countUp(el);});
+      },80);
+    }
+  }
 
   /* ---------- init ---------- */
   loadChecks(); buildAgenda(); recalc(); tmRender();
