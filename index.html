@@ -271,6 +271,50 @@ Ideal para o seu treino: 1,6 a 2,2 g/kg (~135-180 g). Esta um pouco abaixo do id
     <div class="ins"><div class="ii">📅</div><div class="it">Acompanhe <b>peso e medidas a cada 2–3 semanas</b> e ajuste conforme o resultado.</div></div>
   </div>
 
+  <!-- PROTOCOLO ESTEIRA -->
+  <div class="sec-h reveal"><span class="dot" style="background:var(--lime)"></span><h2>Protocolo esteira · ao vivo</h2></div>
+  <div class="card reveal" id="treadmill-card">
+
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+      <div>
+        <div style="font-size:13px;font-weight:800;color:var(--muted);letter-spacing:.04em;">🎯 30 MIN · ~380 KCAL</div>
+        <div style="font-size:12px;color:var(--muted2);font-weight:600;margin-top:2px;">Inclinação forte + ritmo acelerado · baixo impacto</div>
+      </div>
+      <button id="tmBtn" onclick="tmToggle()" style="font-family:'Manrope';font-size:13px;font-weight:800;padding:10px 18px;border-radius:12px;border:none;background:var(--green);color:var(--bg);cursor:pointer;transition:.2s;">▶ Iniciar</button>
+    </div>
+
+    <!-- timer display -->
+    <div id="tmDisplay" style="display:none;background:#0d120e;border:1px solid var(--card-edge);border-radius:16px;padding:14px 16px;margin-bottom:14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em;">TEMPO TOTAL</div>
+          <div id="tmClock" style="font-family:'Anton';font-size:42px;color:var(--lime);line-height:1;">00:00</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.1em;">PRÓX. ETAPA EM</div>
+          <div id="tmNext" style="font-family:'Anton';font-size:42px;color:#fff;line-height:1;">–</div>
+        </div>
+      </div>
+      <div id="tmBar" style="height:6px;border-radius:4px;background:#1b221c;margin-top:12px;overflow:hidden;">
+        <div id="tmBarFill" style="height:100%;width:0%;background:linear-gradient(90deg,var(--green),var(--lime));transition:width .5s linear;border-radius:4px;"></div>
+      </div>
+    </div>
+
+    <!-- fases -->
+    <div id="tmPhases"></div>
+
+    <!-- dicas -->
+    <div style="margin-top:16px;padding:12px 14px;background:#0d120e;border:1px solid var(--card-edge);border-radius:14px;">
+      <div style="font-size:11px;font-weight:800;color:var(--muted2);letter-spacing:.1em;margin-bottom:8px;">⚠️ DICAS</div>
+      <div style="font-size:12.5px;color:var(--muted);font-weight:600;line-height:1.7;">
+        ✅ Sem se pendurar no apoio (anula metade do esforço)<br>
+        ✅ Abdômen contraído e postura ereta<br>
+        ✅ Passadas firmes, pisando o pé inteiro<br>
+        ✅ Se inclinação 12–13 for demais, comece em 10 e suba com o tempo
+      </div>
+    </div>
+  </div>
+
   <div class="foot reveal">
     <div class="nut">Renova Be · Nutrição</div>
     <div class="crn">CRN 43226</div>
@@ -288,7 +332,108 @@ Ideal para o seu treino: 1,6 a 2,2 g/kg (~135-180 g). Esta um pouco abaixo do id
     musc:    {icon:'🏋️', name:'Musculação + esteira', detail:'+ 25min esteira', kcal:600},
     crossfit:{icon:'🤸', name:'CrossFit',             detail:'aula · 1h',  kcal:750},
     bike:    {icon:'🚴', name:'Bike na rua',          detail:'10 km',      kcal:300},
+    esteira: {icon:'🏃', name:'Esteira protocolo',    detail:'30 min · intervalado', kcal:380},
   };
+
+  /* ---------- treadmill phases ---------- */
+  const TM_PHASES=[
+    {start:0,  end:4,  name:'Aquecimento',      inc:4,  vel:4.5, tip:'Ativa glúteos e core, prepara a frequência cardíaca.', color:'#28e07b'},
+    {start:4,  end:9,  name:'Subida progressiva',inc:8,  vel:5.0, tip:'Já entra na zona de queima, respiração acelera mas controlada.', color:'#8fd44e'},
+    {start:9,  end:13, name:'Power walk forte',  inc:6,  vel:6.0, tip:'Ritmo rápido em terreno mais baixo. Aqui o coração trabalha de verdade.', color:'#c6f24e'},
+    {start:13, end:18, name:'Montanha',          inc:12, vel:4.5, tip:'Bloco mais pesado: pernas, glúteos e abdômen no limite, sem impacto.', color:'#ff8a5c'},
+    {start:18, end:22, name:'Recuperação ativa', inc:7,  vel:5.2, tip:'Baixa a inclinação mas mantém o ritmo — gasto calórico segue alto.', color:'#28e07b'},
+    {start:22, end:27, name:'Pico final',        inc:13, vel:4.7, tip:'Último esforço forte. É onde mais se queima.', color:'#ff6b3d'},
+    {start:27, end:30, name:'Desaceleração',     inc:4,  vel:4.0, tip:'Reduz aos poucos para a frequência voltar ao normal.', color:'#5f9ea0'},
+  ];
+  const TM_TOTAL=30*60; // 1800s
+  let tmInterval=null, tmElapsed=0, tmRunning=false;
+
+  function tmPhaseAt(sec){
+    const min=sec/60;
+    return TM_PHASES.findIndex(p=>min>=p.start&&min<p.end);
+  }
+
+  function tmFmtTime(sec){
+    const m=Math.floor(sec/60), s=sec%60;
+    return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  }
+
+  function tmRender(){
+    const idx=tmRunning||tmElapsed>0 ? tmPhaseAt(tmElapsed) : -1;
+    const c=document.getElementById('tmPhases'); if(!c)return;
+    c.innerHTML='';
+    TM_PHASES.forEach((p,i)=>{
+      const active=(i===idx);
+      const done=tmElapsed>0&&(tmElapsed/60)>=p.end;
+      const dur=p.end-p.start;
+      const div=document.createElement('div');
+      div.style.cssText=`display:flex;gap:12px;padding:12px 10px;border-radius:14px;margin-bottom:6px;border:1px solid ${active?p.color:'var(--card-edge)'};background:${active?'rgba(0,0,0,.35)':'transparent'};transition:.3s;`;
+      if(active) div.style.boxShadow=`0 0 18px ${p.color}33`;
+      div.innerHTML=`
+        <div style="min-width:36px;text-align:center;padding-top:2px;">
+          <div style="font-size:10px;font-weight:800;color:${done?'var(--muted2)':active?p.color:'var(--muted2)'};letter-spacing:.04em;">${p.start}–${p.end}</div>
+          <div style="font-size:9px;color:var(--muted2);font-weight:600;">${dur} min</div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span style="font-size:14px;font-weight:800;color:${done?'var(--muted2)':active?p.color:'var(--ink)'}">${p.name}</span>
+            ${active?`<span style="font-size:9px;font-weight:900;letter-spacing:.08em;color:var(--bg);background:${p.color};padding:2px 7px;border-radius:6px;">AGORA</span>`:''}
+            ${done?`<span style="font-size:9px;font-weight:900;color:var(--muted2);">✓</span>`:''}
+          </div>
+          <div style="display:flex;gap:12px;margin-top:4px;">
+            <span style="font-size:12px;font-weight:700;color:${active?'#fff':'var(--muted)'};">📐 Inc: <b style="color:${active?p.color:'inherit'}">${p.inc}</b></span>
+            <span style="font-size:12px;font-weight:700;color:${active?'#fff':'var(--muted)'};">⚡ Vel: <b style="color:${active?p.color:'inherit'}">${p.vel.toFixed(1)}</b> km/h</span>
+          </div>
+          <div style="font-size:11.5px;color:var(--muted2);margin-top:3px;font-weight:600;">${p.tip}</div>
+        </div>`;
+      c.appendChild(div);
+    });
+  }
+
+  function tmUpdateDisplay(){
+    const clock=document.getElementById('tmClock');
+    const nextEl=document.getElementById('tmNext');
+    const fill=document.getElementById('tmBarFill');
+    if(!clock)return;
+    clock.textContent=tmFmtTime(tmElapsed);
+    const idx=tmPhaseAt(tmElapsed);
+    if(idx>=0&&idx<TM_PHASES.length){
+      const p=TM_PHASES[idx];
+      const secLeft=Math.max(0,p.end*60-tmElapsed);
+      nextEl.textContent=tmFmtTime(secLeft);
+    } else {
+      nextEl.textContent='–';
+    }
+    if(fill) fill.style.width=Math.min(100,(tmElapsed/TM_TOTAL)*100)+'%';
+    tmRender();
+  }
+
+  function tmToggle(){
+    const btn=document.getElementById('tmBtn');
+    const disp=document.getElementById('tmDisplay');
+    if(!tmRunning&&tmElapsed>=TM_TOTAL){ tmElapsed=0; }
+    if(tmRunning){
+      clearInterval(tmInterval); tmRunning=false;
+      btn.textContent='▶ Continuar';
+      btn.style.background='var(--green)';
+    } else {
+      disp.style.display='block';
+      tmRunning=true;
+      btn.textContent='⏸ Pausar';
+      btn.style.background='var(--coral)';
+      tmInterval=setInterval(()=>{
+        tmElapsed++;
+        tmUpdateDisplay();
+        if(tmElapsed>=TM_TOTAL){
+          clearInterval(tmInterval); tmRunning=false;
+          btn.textContent='✓ Concluído';
+          btn.style.background='#2a3a2c';
+          btn.style.color='var(--green)';
+        }
+      },1000);
+    }
+    tmUpdateDisplay();
+  }
   // index = getDay(): 0=Dom ... 6=Sáb
   const WEEK=[
     {key:'dom',label:'Domingo',w:'bike'},
@@ -395,7 +540,7 @@ Ideal para o seu treino: 1,6 a 2,2 g/kg (~135-180 g). Esta um pouco abaixo do id
   });
 
   /* ---------- init ---------- */
-  loadChecks(); buildAgenda(); recalc();
+  loadChecks(); buildAgenda(); recalc(); tmRender();
 </script>
 </body>
 </html>
